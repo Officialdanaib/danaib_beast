@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DanAIB Outreach Beast V3</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#07070F;--bg2:#0D0D1A;--bg3:#131320;--card:#181828;--card2:#1E1E30;--gold:#FFB800;--orange:#FF6B35;--cyan:#00D4FF;--green:#00E676;--purple:#9B5DE5;--red:#FF4B4B;--text:#F0F0FF;--muted:#6666AA;--border:rgba(255,255,255,0.07)}
+html,body{height:100%}
+body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;overflow-x:hidden}
+/* TOAST */
+#toast{position:fixed;bottom:1.5rem;right:1.5rem;padding:.75rem 1.1rem;border-radius:10px;font-size:.82rem;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;max-width:300px}
+#toast.show{opacity:1}
+#toast.success{background:#0a2a1a;border:1px solid rgba(0,230,118,.35);color:var(--green)}
+#toast.error{background:#2a0a0a;border:1px solid rgba(255,75,75,.35);color:var(--red)}
+#toast.info{background:#1a1500;border:1px solid rgba(255,184,0,.35);color:var(--gold)}
+/* HEADER */
+header{background:rgba(7,7,15,.97);border-bottom:1px solid var(--border);padding:0 1.5rem;position:sticky;top:0;z-index:100}
+.hdr{max-width:1400px;margin:0 auto;height:58px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;background:linear-gradient(135deg,var(--gold),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.badges{display:flex;gap:.5rem}
+.badge{font-size:.68rem;font-weight:600;padding:.2rem .65rem;border-radius:50px;display:flex;align-items:center;gap:.3rem}
+.b-green{background:rgba(0,230,118,.1);border:1px solid rgba(0,230,118,.25);color:var(--green)}
+.b-cyan{background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.2);color:var(--cyan)}
+.dot{width:6px;height:6px;border-radius:50%;background:currentColor;animation:blink 1.8s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:290px 1fr;min-height:calc(100vh - 58px)}
+/* SIDEBAR */
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:1.1rem;overflow-y:auto;height:calc(100vh - 58px);position:sticky;top:58px}
+.slabel{font-size:.67rem;text-transform:uppercase;letter-spacing:2px;color:var(--muted);font-weight:600;margin-bottom:.65rem;margin-top:1.1rem;display:flex;align-items:center;gap:.4rem}
+.slabel:first-child{margin-top:0}
+.slabel::after{content:'';flex:1;height:1px;background:var(--border)}
+input,select,textarea{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:.55rem .8rem;color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:.8rem;outline:none;transition:border-color .2s}
+input:focus,select:focus,textarea:focus{border-color:rgba(255,184,0,.45)}
+select{-webkit-appearance:none;cursor:pointer}
+select option{background:var(--bg3)}
+.row{display:flex;gap:.4rem;margin-bottom:.6rem}
+.row input{flex:1}
+.addbtn{background:rgba(255,184,0,.12);border:1px solid rgba(255,184,0,.3);color:var(--gold);border-radius:8px;padding:0 .75rem;cursor:pointer;font-size:1rem;flex-shrink:0;transition:background .2s;font-family:'Space Grotesk',sans-serif}
+.addbtn:hover{background:rgba(255,184,0,.22)}
+.ctags{display:flex;flex-wrap:wrap;gap:.35rem;min-height:10px;margin-bottom:.5rem}
+.ctag{background:rgba(255,184,0,.08);border:1px solid rgba(255,184,0,.2);color:var(--gold);font-size:.68rem;padding:.2rem .55rem;border-radius:50px;cursor:pointer;display:inline-flex;align-items:center;gap:.25rem;transition:all .15s}
+.ctag:hover{background:rgba(255,75,75,.1);border-color:rgba(255,75,75,.3);color:var(--red)}
+.presets{display:flex;flex-wrap:wrap;gap:.3rem;margin-bottom:.5rem}
+.preset{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:.3rem .5rem;font-size:.68rem;color:var(--muted);cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:all .15s}
+.preset:hover{border-color:rgba(255,184,0,.3);color:var(--gold)}
+.tgrid{display:grid;grid-template-columns:1fr 1fr;gap:.35rem;margin-bottom:.5rem}
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:.35rem;margin-bottom:.5rem}
+.tgl{background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:.4rem .4rem;font-size:.68rem;color:var(--muted);cursor:pointer;text-align:center;font-family:'Space Grotesk',sans-serif;transition:all .2s;line-height:1.3;user-select:none}
+.tgl:hover{border-color:rgba(255,184,0,.25);color:var(--text)}
+.tgl.on{background:rgba(255,184,0,.08);border-color:rgba(255,184,0,.35);color:var(--gold)}
+.tgl.on-c{background:rgba(0,212,255,.06);border-color:rgba(0,212,255,.3);color:var(--cyan)}
+.field{margin-bottom:.65rem}
+.fl{font-size:.72rem;color:var(--muted);display:block;margin-bottom:.3rem;font-weight:500}
+.hint{font-size:.65rem;color:var(--muted);line-height:1.5;margin-top:.25rem}
+.hint a{color:var(--cyan);text-decoration:none}
+textarea{resize:vertical;min-height:55px;line-height:1.6;font-size:.78rem}
+.runbtn{width:100%;background:linear-gradient(135deg,var(--gold),var(--orange));color:#000;border:none;border-radius:50px;padding:.78rem;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.88rem;cursor:pointer;margin-top:.75rem;display:flex;align-items:center;justify-content:center;gap:.5rem;transition:opacity .2s}
+.runbtn:hover{opacity:.88}
+.runbtn:disabled{opacity:.35;cursor:not-allowed}
+/* MAIN */
+.main{padding:1.1rem;overflow-y:auto;height:calc(100vh - 58px)}
+.minner{max-width:1050px;margin:0 auto}
+/* TABS */
+.tabs{display:flex;gap:.35rem;background:var(--bg2);border-radius:10px;padding:.3rem;border:1px solid var(--border);margin-bottom:1rem;overflow-x:auto}
+.tab{flex:1;background:transparent;border:none;color:var(--muted);padding:.5rem .6rem;border-radius:7px;font-family:'Space Grotesk',sans-serif;font-size:.75rem;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center}
+.tab.on{background:var(--card2);color:var(--text)}
+/* STATS */
+.sbar{display:grid;grid-template-columns:repeat(4,1fr);gap:.65rem;margin-bottom:1rem}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.75rem .9rem}
+.sn{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;line-height:1}
+.sn.g{background:linear-gradient(135deg,var(--gold),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sn.c{color:var(--cyan)}.sn.gr{color:var(--green)}.sn.p{color:var(--purple)}
+.sl{font-size:.68rem;color:var(--muted);margin-top:.15rem}
+/* LEAD CARDS */
+.rh{display:flex;align-items:center;justify-content:space-between;margin-bottom:.85rem;flex-wrap:wrap;gap:.5rem}
+.rhl{font-size:.8rem;color:var(--muted)}
+.rhl strong{color:var(--gold)}
+.rhbtns{display:flex;gap:.4rem}
+.smb{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:7px;padding:.33rem .75rem;font-size:.72rem;cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:all .2s}
+.smb:hover{border-color:var(--gold);color:var(--gold)}
+.lcard{background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:.75rem;overflow:hidden;transition:border-color .25s}
+.lcard:hover{border-color:rgba(255,184,0,.16)}
+.lhead{padding:.9rem 1rem;display:flex;align-items:flex-start;gap:.75rem}
+.av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--orange));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.82rem;color:#000;flex-shrink:0}
+.linfo{flex:1;min-width:0}
+.lname{font-weight:700;font-size:.9rem;display:flex;align-items:center;gap:.4rem;flex-wrap:wrap}
+.spill{font-size:.65rem;font-weight:700;padding:.15rem .5rem;border-radius:50px}
+.sh{background:rgba(0,230,118,.12);color:var(--green);border:1px solid rgba(0,230,118,.22)}
+.sm2{background:rgba(255,184,0,.1);color:var(--gold);border:1px solid rgba(255,184,0,.2)}
+.sl2{background:rgba(155,93,229,.1);color:var(--purple);border:1px solid rgba(155,93,229,.2)}
+.lrole{font-size:.72rem;color:var(--cyan);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:.12rem}
+.lmeta{font-size:.72rem;color:var(--muted);margin-top:.18rem;line-height:1.5}
+.sbar2{display:flex;align-items:center;gap:.4rem;margin-top:.25rem}
+.sbar3{height:3px;border-radius:2px;background:var(--border);flex:1;overflow:hidden}
+.sfill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--gold),var(--green))}
+.stxt{font-size:.62rem;color:var(--muted);white-space:nowrap}
+.lbtns{display:flex;gap:.35rem;flex-shrink:0;flex-wrap:wrap}
+.lb{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:.3rem .6rem;font-size:.7rem;color:var(--muted);cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:all .2s;white-space:nowrap}
+.lb:hover{border-color:var(--gold);color:var(--gold)}
+.lb.p{background:rgba(255,184,0,.08);border-color:rgba(255,184,0,.28);color:var(--gold)}
+.lcontacts{padding:0 1rem .75rem;display:flex;flex-wrap:wrap;gap:.35rem}
+.chip{display:inline-flex;align-items:center;gap:.28rem;font-size:.7rem;padding:.25rem .6rem;border-radius:50px;border:1px solid var(--border);color:var(--muted);background:var(--bg3);cursor:pointer;text-decoration:none;transition:all .18s}
+.chip:hover{border-color:var(--cyan);color:var(--cyan)}
+.chip.gc{border-color:rgba(255,184,0,.22);color:var(--gold)}
+.chip.rc{border-color:rgba(0,230,118,.22);color:var(--green)}
+/* OUTREACH */
+.opanel{background:var(--bg3);border-top:1px solid var(--border);padding:.9rem 1rem;display:none}
+.opanel.open{display:block}
+.otabs{display:flex;gap:.3rem;margin-bottom:.65rem;flex-wrap:wrap}
+.otab{background:transparent;border:1px solid var(--border);border-radius:5px;padding:.25rem .6rem;font-size:.68rem;color:var(--muted);cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:all .2s}
+.otab.on{background:rgba(0,212,255,.07);border-color:rgba(0,212,255,.28);color:var(--cyan)}
+.omsg{font-size:.78rem;line-height:1.75;color:var(--text);white-space:pre-wrap;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.8rem;margin-bottom:.6rem;max-height:220px;overflow-y:auto}
+.oacts{display:flex;gap:.4rem;flex-wrap:wrap}
+.oab{padding:.35rem .8rem;border-radius:6px;font-size:.7rem;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-weight:600;border:none;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:.3rem}
+.oc{background:rgba(255,184,0,.1);color:var(--gold)}.oc:hover{background:rgba(255,184,0,.2)}
+.ow{background:rgba(0,230,118,.1);color:var(--green)}.ow:hover{background:rgba(0,230,118,.2)}
+.om{background:rgba(0,212,255,.08);color:var(--cyan)}.om:hover{background:rgba(0,212,255,.18)}
+.os{background:rgba(155,93,229,.08);color:var(--purple)}.os:hover{background:rgba(155,93,229,.18)}
+/* TRACKER */
+.tcard{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.75rem .9rem;margin-bottom:.55rem;display:flex;align-items:center;gap:.75rem}
+.tav{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--orange));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;color:#000;flex-shrink:0}
+.tinfo{flex:1;min-width:0}
+.tname{font-weight:600;font-size:.85rem}
+.tsub{font-size:.7rem;color:var(--muted);margin-top:.1rem}
+.tright{display:flex;align-items:center;gap:.4rem}
+.ssel{width:auto;padding:.28rem .5rem;font-size:.7rem;border-radius:6px}
+.delbtn{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:.85rem;transition:color .2s}
+.delbtn:hover{color:var(--red)}
+/* FF */
+.ffgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.75rem}
+.ffcard{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.9rem;transition:border-color .2s}
+.ffcard:hover{border-color:rgba(255,184,0,.18)}
+.fft{font-weight:700;font-size:.84rem;margin-bottom:.25rem}
+.ffs{font-size:.72rem;color:var(--muted);margin-bottom:.65rem;line-height:1.5}
+.fflinks{display:flex;flex-direction:column;gap:.3rem}
+.ffl{display:flex;align-items:center;gap:.4rem;font-size:.72rem;color:var(--muted);text-decoration:none;padding:.35rem .6rem;background:var(--bg3);border-radius:6px;border:1px solid var(--border);transition:all .2s}
+.ffl:hover{border-color:var(--cyan);color:var(--cyan)}
+/* BOOKING */
+.bform{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.25rem;max-width:560px}
+.bform h3{font-family:'Syne',sans-serif;font-size:1.1rem;margin-bottom:.35rem}
+.bform p{font-size:.78rem;color:var(--muted);margin-bottom:1rem;line-height:1.6}
+.bprev{background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:.9rem;margin-top:.85rem;font-size:.78rem;line-height:1.75;color:var(--muted)}
+.bprev strong{color:var(--text);display:block;margin-bottom:.4rem}
+.brow{display:flex;gap:.4rem;margin-top:.6rem}
+.brow input{flex:1;font-size:.72rem}
+/* FINDER */
+.fbox{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.25rem;max-width:520px}
+.fbox h3{font-family:'Syne',sans-serif;font-size:1.1rem;margin-bottom:.35rem}
+.fbox p{font-size:.78rem;color:var(--muted);margin-bottom:1rem;line-height:1.6}
+/* EMPTY/LOADING */
+.empty{text-align:center;padding:3rem 2rem;color:var(--muted)}
+.eico{font-size:2.2rem;margin-bottom:.75rem;opacity:.4}
+.empty h3{font-family:'Syne',sans-serif;font-size:1.05rem;color:var(--text);opacity:.5;margin-bottom:.35rem}
+.empty p{font-size:.78rem;line-height:1.7;max-width:320px;margin:0 auto}
+.loading{display:flex;flex-direction:column;align-items:center;gap:.75rem;padding:2.5rem}
+.spin{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .75s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.lsteps{display:flex;flex-direction:column;gap:.3rem;margin-top:.4rem}
+.lstep{font-size:.72rem;color:var(--muted);display:flex;align-items:center;gap:.35rem}
+.lstep.act{color:var(--gold)}
+.lstep.done{color:var(--green)}
+.bgrid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;align-items:start}
+@media(max-width:800px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{height:auto;position:static;border-right:none;border-bottom:1px solid var(--border)}
+  .main{height:auto}
+  .sbar,.bgrid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+<div id="toast"></div>
+<header>
+  <div class="hdr">
+    <div class="logo">⚡ DanAIB Outreach Beast V3</div>
+    <div class="badges">
+      <div class="badge b-green"><span class="dot"></span>Live</div>
+      <div class="badge b-cyan">AI + Real Search</div>
+    </div>
+  </div>
+</header>
+<div class="layout">
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="slabel">API Keys</div>
+  <div class="field">
+    <label class="fl">Google API Key</label>
+    <input type="password" id="gKey" placeholder="AIza... (optional for real search)">
+    <div class="hint">Free at <a href="https://console.cloud.google.com" target="_blank">console.cloud.google.com</a></div>
+  </div>
+  <div class="field">
+    <label class="fl">Google CX ID</label>
+    <input type="text" id="gCX" placeholder="Your Search Engine ID">
+  </div>
+  <div class="field">
+    <label class="fl">Hunter.io Key (email finder)</label>
+    <input type="password" id="hKey" placeholder="Free at hunter.io">
+  </div>
+
+  <div class="slabel">Target Countries</div>
+  <div class="row">
+    <input type="text" id="cIn" placeholder="Type country + Enter">
+    <button class="addbtn" id="addCBtn">+</button>
+  </div>
+  <div class="presets" id="presets"></div>
+  <div class="ctags" id="cTags"></div>
+
+  <div class="slabel">Target Type</div>
+  <div class="tgrid" id="tGrid"></div>
+
+  <div class="slabel">Source</div>
+  <div class="field">
+    <select id="srcSel">
+      <option value="google">Google (All Web)</option>
+      <option value="filmfreeway">FilmFreeway</option>
+      <option value="imdb">IMDb</option>
+      <option value="linkedin">LinkedIn</option>
+    </select>
+  </div>
+
+  <div class="slabel">Outreach Channels</div>
+  <div class="pgrid" id="pGrid"></div>
+
+  <div class="slabel">Extra Context</div>
+  <textarea id="extraCtx" placeholder="Festival name, specific project, extra info..."></textarea>
+
+  <button class="runbtn" id="runBtn">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+    Find Leads & Generate Outreach
+  </button>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+<div class="minner">
+  <div class="tabs" id="tabBar">
+    <button class="tab on" data-tab="leads">🔍 Leads</button>
+    <button class="tab" data-tab="ff">🎬 FilmFreeway</button>
+    <button class="tab" data-tab="tracker">📋 Tracker</button>
+    <button class="tab" data-tab="booking">📅 Booking</button>
+    <button class="tab" data-tab="finder">🔎 Email Finder</button>
+  </div>
+  <div class="sbar">
+    <div class="sc"><div class="sn g" id="s1">0</div><div class="sl">Leads Found</div></div>
+    <div class="sc"><div class="sn c" id="s2">0</div><div class="sl">Saved</div></div>
+    <div class="sc"><div class="sn gr" id="s3">0</div><div class="sl">Contacted</div></div>
+    <div class="sc"><div class="sn p" id="s4">0</div><div class="sl">Converted</div></div>
+  </div>
+
+  <!-- LEADS -->
+  <div id="tab-leads">
+    <div id="leadsOut">
+      <div class="empty"><div class="eico">🎯</div><h3>Ready to find leads</h3><p>Add countries, pick targets and channels, then hit Find Leads. With Google API keys it pulls real people — without keys it generates realistic profiles.</p></div>
+    </div>
+  </div>
+
+  <!-- FF -->
+  <div id="tab-ff" style="display:none">
+    <div style="background:rgba(255,184,0,.04);border:1px solid rgba(255,184,0,.12);border-radius:10px;padding:.9rem 1rem;margin-bottom:1rem;font-size:.78rem;line-height:1.7;color:var(--muted)"><strong style="color:var(--gold)">FilmFreeway Strategy — </strong>Click any link to open real Google searches targeting film creators in your chosen countries. Find their profile, copy their contact info, then use the Email Finder tab to get their verified email.</div>
+    <div id="ffOut"><div class="empty"><div class="eico">🎬</div><h3>Add countries first</h3></div></div>
+  </div>
+
+  <!-- TRACKER -->
+  <div id="tab-tracker" style="display:none">
+    <div class="sbar" style="margin-bottom:.85rem">
+      <div class="sc"><div class="sn g" id="t1">0</div><div class="sl">Total</div></div>
+      <div class="sc"><div class="sn c" id="t2">0</div><div class="sl">Contacted</div></div>
+      <div class="sc"><div class="sn gr" id="t3">0</div><div class="sl">Replied</div></div>
+      <div class="sc"><div class="sn p" id="t4">0</div><div class="sl">Converted</div></div>
+    </div>
+    <div class="rh">
+      <div class="rhl">Your pipeline</div>
+      <div class="rhbtns">
+        <button class="smb" onclick="exportCSV()">⬇ Export CSV</button>
+        <button class="smb" onclick="clearAll()" style="color:var(--red)">🗑 Clear All</button>
+      </div>
+    </div>
+    <div id="trackerOut"><div class="empty"><div class="eico">📋</div><h3>No saved leads yet</h3></div></div>
+  </div>
+
+  <!-- BOOKING -->
+  <div id="tab-booking" style="display:none">
+    <div class="bgrid">
+      <div class="bform">
+        <h3>Booking CTA Generator</h3>
+        <p>Generate a professional booking message to paste at the end of every outreach. Clients can contact you directly to book a free discovery call.</p>
+        <div class="field"><label class="fl">Your Name</label><input type="text" id="bkN" value="Ibrahim Abdul Mumeen (OfficialDanAIB)"></div>
+        <div class="field"><label class="fl">Title</label><input type="text" id="bkT" value="2D/3D Character Artist & Animation Studio Head"></div>
+        <div class="field"><label class="fl">Session</label>
+          <select id="bkD"><option>15 minutes</option><option selected>30 minutes</option><option>1 hour</option></select>
+        </div>
+        <div class="field"><label class="fl">Session Type</label>
+          <select id="bkTy"><option>Discovery Call</option><option>Project Brief Review</option><option>Portfolio Walkthrough</option></select>
+        </div>
+        <div class="field"><label class="fl">WhatsApp</label><input type="text" id="bkW" value="+2347037572946"></div>
+        <div class="field"><label class="fl">Email</label><input type="text" id="bkE" value="themediaexcellency@gmail.com"></div>
+        <button class="runbtn" onclick="genBooking()" style="margin-top:.4rem">Generate Booking CTA</button>
+        <div class="bprev" id="bkPrev"><strong>Your booking message will appear here</strong>Fill in the form above and click Generate.</div>
+        <div class="brow"><input type="text" id="bkOut" readonly placeholder="Generated message..."><button class="smb" onclick="copyBk()">Copy</button></div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.1rem">
+        <div style="font-size:.72rem;color:var(--gold);font-weight:600;margin-bottom:.6rem">💡 Where to use your booking CTA</div>
+        <ul style="font-size:.72rem;color:var(--muted);line-height:2;padding-left:1rem">
+          <li>End of every email outreach</li>
+          <li>Instagram DM follow-up</li>
+          <li>LinkedIn connection message</li>
+          <li>WhatsApp introduction</li>
+          <li>Your portfolio website footer</li>
+          <li>Fiverr profile description</li>
+        </ul>
+        <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);font-size:.72rem;color:var(--muted);line-height:1.7"><strong style="color:var(--text)">Your live portfolio:</strong><br><a href="https://officialdanaib.github.io/My-Original-Portfolio/" target="_blank" style="color:var(--cyan);font-size:.7rem">officialdanaib.github.io/My-Original-Portfolio/</a></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FINDER -->
+  <div id="tab-finder" style="display:none">
+    <div class="bgrid">
+      <div class="fbox">
+        <h3>Email Finder</h3>
+        <p>Enter a name and company domain to find their verified email via Hunter.io. Add your free Hunter.io API key in the sidebar for instant lookups.</p>
+        <div class="field"><label class="fl">Full Name</label><input type="text" id="fnN" placeholder="e.g. Mohammed Al-Rashid"></div>
+        <div class="field"><label class="fl">Company Domain</label><input type="text" id="fnD" placeholder="e.g. company.com or aljazeera.net"></div>
+        <button class="runbtn" onclick="findEmail()" id="findBtn" style="margin-top:.4rem">🔎 Find Email</button>
+        <div id="findOut" style="margin-top:.85rem"></div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.1rem">
+        <div style="font-size:.72rem;color:var(--gold);font-weight:600;margin-bottom:.65rem">🔍 Manual research tips</div>
+        <div style="font-size:.72rem;color:var(--muted);line-height:1.9">
+          <div style="margin-bottom:.5rem"><strong style="color:var(--text)">FilmFreeway</strong> — Open creator profile → look for email/website in bio section</div>
+          <div style="margin-bottom:.5rem"><strong style="color:var(--text)">IMDb</strong> — Search name → check agency or contact info</div>
+          <div style="margin-bottom:.5rem"><strong style="color:var(--text)">LinkedIn</strong> — Search name + country → click Contact Info</div>
+          <div><strong style="color:var(--text)">Instagram</strong> — Bio link usually leads to website with email</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</main>
+</div>
+
+<script>
+// ========== STATE ==========
+var countries = [];
+var activeT = {'Film Directors':true,'Screenwriters':true,'Actors':true};
+var activeP = {'email':true,'instagram':true,'linkedin':true,'whatsapp':true};
+var savedLeads = [];
+var currentLeads = [];
+
+var TARGETS = ['Film Directors','Screenwriters','Actors','Producers','Business Owners','Music Artists'];
+var PLATFORMS = ['email','instagram','linkedin','whatsapp','twitter','arabic'];
+var PRESETS = [
+  {flag:'🇰🇼',name:'Kuwait'},{flag:'🇦🇪',name:'UAE'},{flag:'🇴🇲',name:'Oman'},
+  {flag:'🇯🇴',name:'Jordan'},{flag:'🇶🇦',name:'Qatar'},{flag:'🇧🇭',name:'Bahrain'},
+  {flag:'🇨🇭',name:'Switzerland'},{flag:'🇳🇴',name:'Norway'},{flag:'🇸🇬',name:'Singapore'},{flag:'🇸🇦',name:'Saudi Arabia'}
+];
+var PICONS = {email:'✉️',instagram:'📸',linkedin:'💼',whatsapp:'💬',twitter:'🐦',arabic:'🌙',sequence:'📅'};
+
+// ========== INIT ==========
+function init(){
+  // Build presets
+  var ps = document.getElementById('presets');
+  PRESETS.forEach(function(p){
+    var b = document.createElement('button');
+    b.className = 'preset';
+    b.textContent = p.flag+' '+p.name;
+    b.onclick = function(){ addCountry(p.name); };
+    ps.appendChild(b);
+  });
+
+  // Build target grid
+  var tg = document.getElementById('tGrid');
+  TARGETS.forEach(function(t){
+    var b = document.createElement('button');
+    b.className = 'tgl' + (activeT[t]?' on':'');
+    b.textContent = t;
+    b.dataset.t = t;
+    b.onclick = function(){
+      if(activeT[t]){
+        var cnt = Object.values(activeT).filter(Boolean).length;
+        if(cnt<=1) return;
+        activeT[t]=false; b.classList.remove('on');
+      } else {
+        activeT[t]=true; b.classList.add('on');
+      }
+    };
+    tg.appendChild(b);
+  });
+
+  // Build platform grid
+  var pg = document.getElementById('pGrid');
+  PLATFORMS.forEach(function(p){
+    var b = document.createElement('button');
+    b.className = 'tgl' + (activeP[p]?' on on-c':'');
+    b.textContent = (PICONS[p]||'')+ ' ' +p;
+    b.dataset.p = p;
+    b.onclick = function(){
+      if(activeP[p]){
+        var cnt = Object.values(activeP).filter(Boolean).length;
+        if(cnt<=1) return;
+        activeP[p]=false; b.classList.remove('on','on-c');
+      } else {
+        activeP[p]=true; b.classList.add('on','on-c');
+      }
+    };
+    pg.appendChild(b);
+  });
+
+  // Country input enter key
+  document.getElementById('cIn').addEventListener('keydown', function(e){
+    if(e.key==='Enter'){ e.preventDefault(); addCountry(this.value.trim()); this.value=''; }
+  });
+
+  // Add country button
+  document.getElementById('addCBtn').addEventListener('click', function(){
+    var v = document.getElementById('cIn').value.trim();
+    if(v){ addCountry(v); document.getElementById('cIn').value=''; }
+  });
+
+  // Run button
+  document.getElementById('runBtn').addEventListener('click', runSearch);
+
+  // Tabs
+  document.getElementById('tabBar').addEventListener('click', function(e){
+    var btn = e.target.closest('.tab');
+    if(!btn) return;
+    document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('on'); });
+    btn.classList.add('on');
+    var tab = btn.dataset.tab;
+    ['leads','ff','tracker','booking','finder'].forEach(function(id){
+      document.getElementById('tab-'+id).style.display = id===tab?'block':'none';
+    });
+    if(tab==='tracker') renderTracker();
+  });
+
+  // Load saved leads
+  loadLeads();
+}
+
+// ========== TOAST ==========
+var _tt;
+function toast(msg, type, dur){
+  type = type||'info'; dur = dur||3000;
+  var el = document.getElementById('toast');
+  el.textContent = msg; el.className = 'show '+type;
+  clearTimeout(_tt); _tt = setTimeout(function(){ el.className=''; }, dur);
+}
+
+// ========== COUNTRIES ==========
+function addCountry(name){
+  if(!name) return;
+  if(countries.indexOf(name)>-1){ toast(name+' already added','info'); return; }
+  countries.push(name);
+  renderCountries();
+  renderFF();
+  toast(name+' added','success',1500);
+}
+function removeCountry(name){
+  countries = countries.filter(function(c){ return c!==name; });
+  renderCountries(); renderFF();
+}
+function renderCountries(){
+  var el = document.getElementById('cTags');
+  el.innerHTML = '';
+  countries.forEach(function(c){
+    var span = document.createElement('span');
+    span.className = 'ctag';
+    span.innerHTML = c+' <span>✕</span>';
+    span.onclick = function(){ removeCountry(c); };
+    el.appendChild(span);
+  });
+}
+
+// ========== CLOUD STORAGE ==========
+async function saveLeads(){
+  try{ await window.storage.set('beast_leads', JSON.stringify(savedLeads)); }
+  catch(e){ localStorage.setItem('beast_leads', JSON.stringify(savedLeads)); }
+}
+async function loadLeads(){
+  try{
+    var r = await window.storage.get('beast_leads');
+    if(r && r.value) savedLeads = JSON.parse(r.value);
+    else savedLeads = JSON.parse(localStorage.getItem('beast_leads')||'[]');
+  } catch(e){
+    try{ savedLeads = JSON.parse(localStorage.getItem('beast_leads')||'[]'); }
+    catch(e2){ savedLeads = []; }
+  }
+  updateStats();
+}
+
+// ========== STATS ==========
+function updateStats(){
+  document.getElementById('s1').textContent = currentLeads.length;
+  document.getElementById('s2').textContent = savedLeads.length;
+  document.getElementById('s3').textContent = savedLeads.filter(function(l){ return l.status&&l.status!=='new'; }).length;
+  document.getElementById('s4').textContent = savedLeads.filter(function(l){ return l.status==='converted'; }).length;
+  document.getElementById('t1').textContent = savedLeads.length;
+  document.getElementById('t2').textContent = savedLeads.filter(function(l){ return l.status&&l.status!=='new'; }).length;
+  document.getElementById('t3').textContent = savedLeads.filter(function(l){ return ['replied','converted'].indexOf(l.status)>-1; }).length;
+  document.getElementById('t4').textContent = savedLeads.filter(function(l){ return l.status==='converted'; }).length;
+}
+
+// ========== GOOGLE SEARCH ==========
+async function googleSearch(query, apiKey, cx){
+  var url = 'https://www.googleapis.com/customsearch/v1?key='+apiKey+'&cx='+cx+'&q='+encodeURIComponent(query)+'&num=5';
+  var r = await fetch(url);
+  if(!r.ok) throw new Error('Google API '+r.status);
+  var d = await r.json();
+  return d.items||[];
+}
+
+function itemToLead(item, targetType, country){
+  var title = item.title||'';
+  var snippet = item.snippet||'';
+  var link = item.link||'';
+  var name = title.split(/[-|–—]/)[0].trim().replace(/\s+/g,' ');
+  var emailMatch = (snippet+' '+title).match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+  var igMatch = (snippet+' '+title).match(/@([A-Za-z0-9_.]{3,28})/);
+  return {
+    name: name||'Contact',
+    role: targetType,
+    country: country,
+    project: snippet.slice(0,110)+'...',
+    source_url: link,
+    email: emailMatch?emailMatch[0]:'Search via profile',
+    instagram: igMatch?'@'+igMatch[1]:'Search Instagram',
+    linkedin: 'Search LinkedIn: '+name,
+    twitter: 'Search X: '+name,
+    whatsapp: 'Contact via website',
+    score: null
+  };
+}
+
+// ========== MAIN SEARCH ==========
+async function runSearch(){
+  if(!countries.length){ toast('Add at least one country first','error'); return; }
+
+  var btn = document.getElementById('runBtn');
+  btn.disabled = true; btn.textContent = 'Working...';
+
+  var gKey = document.getElementById('gKey').value.trim();
+  var gCX = document.getElementById('gCX').value.trim();
+  var platforms = Object.keys(activeP).filter(function(p){ return activeP[p]; });
+  var targets = Object.keys(activeT).filter(function(t){ return activeT[t]; });
+  var extra = document.getElementById('extraCtx').value;
+  var src = document.getElementById('srcSel').value;
+  var useArabic = !!activeP['arabic'];
+  var useReal = !!(gKey && gCX);
+
+  var stepLabels = useReal
+    ? ['🌐 Searching Google for real people...','📋 Extracting profiles...','🤖 AI scoring & writing outreach...','📧 Building follow-up sequences...','✅ Done']
+    : ['🤖 Generating targeted leads...','🎯 Scoring by conversion potential...','✍️ Writing personalized messages...','📧 Building follow-up sequences...','✅ Done'];
+
+  var html = '<div class="loading"><div class="spin"></div><p style="font-size:.82rem;color:var(--muted)">'+(useReal?'Pulling real contacts from Google...':'Generating AI leads...')+'</p><div class="lsteps">';
+  stepLabels.forEach(function(s,i){ html += '<div class="lstep'+(i===0?' act':'')+'" id="ls'+(i+1)+'">'+s+'</div>'; });
+  html += '</div></div>';
+  document.getElementById('leadsOut').innerHTML = html;
+
+  var si = 0;
+  var stimer = setInterval(function(){
+    var prev = document.getElementById('ls'+(si));
+    if(prev){ prev.className='lstep done'; prev.textContent='✅ '+prev.textContent.replace(/^[^ ]+ /,''); }
+    si++;
+    var cur = document.getElementById('ls'+si);
+    if(cur) cur.classList.add('act');
+    if(si>=stepLabels.length) clearInterval(stimer);
+  }, 1600);
+
+  try{
+    var realResults = [];
+    if(useReal){
+      var queries = [];
+      countries.forEach(function(c){
+        targets.forEach(function(t){
+          var q = src==='filmfreeway' ? '"'+t+'" "'+c+'" site:filmfreeway.com' :
+                  src==='imdb' ? '"'+t+'" "'+c+'" site:imdb.com' :
+                  src==='linkedin' ? '"'+t+'" "'+c+'" site:linkedin.com' :
+                  '"'+t+'" "'+c+'" animation contact email';
+          queries.push({q:q,t:t,c:c});
+        });
+      });
+      var results = await Promise.all(
+        queries.slice(0,4).map(function(obj){
+          return googleSearch(obj.q, gKey, gCX)
+            .then(function(items){ return items.map(function(item){ return itemToLead(item,obj.t,obj.c); }); })
+            .catch(function(){ return []; });
+        })
+      );
+      var seen = {};
+      results.forEach(function(arr){ arr.forEach(function(r){ if(r.name&&!seen[r.name]){ seen[r.name]=1; realResults.push(r); } }); });
+    }
+
+    clearInterval(stimer);
+
+    var prompt = useReal ? buildRealPrompt(realResults,platforms,extra,useArabic) : buildGenPrompt(countries,targets,platforms,extra,src,useArabic);
+
+    var res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-6',
+        max_tokens:4000,
+        system:'You are an elite outreach strategist for Ibrahim Abdul Mumeen (OfficialDanAIB), Nigerian 2D/3D character artist & animation studio head.\nServices: 2D/3D Character Design, Storyboarding, Animation, Pre-visualization, Visual Development, 3D CAD Design.\nPortfolio: https://officialdanaib.github.io/My-Original-Portfolio/\nGoogle Drive: https://drive.google.com/drive/folders/1buv-svyAWyhet5491I-MtGYYUoLkKtDs\nFiverr: https://www.fiverr.com/ibrahimcadmodel\nEmail: themediaexcellency@gmail.com\nWhatsApp: +2347037572946 & +2349052125532\nBooking CTA: "Book a free 30-min call — WhatsApp: wa.me/2347037572946"\nOutput ONLY valid JSON. No markdown. No extra text whatsoever.',
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+
+    var data = await res.json();
+    var raw = (data.content||[]).filter(function(b){ return b.type==='text'; }).map(function(b){ return b.text; }).join('');
+    var clean = raw.replace(/```json|```/g,'').trim();
+    var parsed = JSON.parse(clean);
+    currentLeads = parsed.leads||[];
+    renderLeads(currentLeads, platforms);
+    updateStats();
+    toast(currentLeads.length+' leads ready'+(useReal?' (real Google results)':''),'success');
+  } catch(e){
+    clearInterval(stimer);
+    document.getElementById('leadsOut').innerHTML = '<div class="empty"><div class="eico">⚠️</div><h3>Error</h3><p>'+e.message+'</p></div>';
+    toast('Error: '+e.message,'error');
+  }
+  btn.disabled=false; btn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg> Find Leads & Generate Outreach';
+}
+
+function buildRealPrompt(results, platforms, extra, useArabic){
+  var platList = platforms.filter(function(p){ return p!=='arabic'; });
+  return 'Here are REAL people found via Google search. Score each and write personalized outreach.\n\nProfiles:\n'+JSON.stringify(results.slice(0,8))+'\n\nExtra: '+(extra||'none')+'\nPlatforms: '+platList.join(', ')+'\nArabic needed: '+useArabic+'\n\nFor each: score 1-10 urgency, write specific outreach per platform referencing their REAL work, build 3-email sequence (Day1/Day5/Day12).\n\nReturn JSON:\n{"leads":[{"name":"","role":"","country":"","project":"","score":8,"score_reason":"","email":"","instagram":"","linkedin":"","twitter":"","whatsapp":"","source_url":"","outreach":{"email":"Subject: ...\\n\\n[body]","instagram":"","linkedin":"","whatsapp":"","twitter":"","arabic":""},"sequence":{"email1":"Subject:...\\n\\n[day1]","email2":"Subject:...\\n\\n[day5]","email3":"Subject:...\\n\\n[day12]"}}]}';
+}
+
+function buildGenPrompt(countries, targets, platforms, extra, src, useArabic){
+  var platList = platforms.filter(function(p){ return p!=='arabic'; });
+  return 'Generate 8 realistic targeted leads.\n\nCountries: '+countries.join(', ')+'\nTargets: '+targets.join(', ')+'\nSource: '+src+'\nPlatforms: '+platList.join(', ')+'\nArabic: '+useArabic+'\nExtra: '+(extra||'none')+'\n\nUse authentic names for Gulf countries. Score 1-10 urgency. Write specific personalized outreach per platform. 3-email follow-up sequence.\n\nReturn JSON:\n{"leads":[{"name":"","role":"","country":"","project":"","score":8,"score_reason":"","email":"","instagram":"","linkedin":"","twitter":"","whatsapp":"","source_url":"","outreach":{"email":"Subject:...\\n\\n[body]","instagram":"","linkedin":"","whatsapp":"","twitter":"","arabic":""},"sequence":{"email1":"Subject:...\\n\\n[day1]","email2":"Subject:...\\n\\n[day5]","email3":"Subject:...\\n\\n[day12]"}}]}';
+}
+
+// ========== RENDER LEADS ==========
+function renderLeads(leads, platforms){
+  if(!leads.length){
+    document.getElementById('leadsOut').innerHTML='<div class="empty"><div class="eico">😕</div><h3>No leads found</h3><p>Try different settings.</p></div>';
+    return;
+  }
+  var sorted = leads.slice().sort(function(a,b){ return (b.score||0)-(a.score||0); });
+  var html = '<div class="rh"><div class="rhl">Found <strong>'+leads.length+'</strong> leads</div><div class="rhbtns"><button class="smb" onclick="exportCSV()">⬇ CSV</button><button class="smb" onclick="saveAllLeads()">💾 Save All</button></div></div>';
+
+  sorted.forEach(function(l, si){
+    var idx = leads.indexOf(l);
+    var initials = (l.name||'??').split(' ').map(function(w){ return w[0]||''; }).slice(0,2).join('').toUpperCase()||'??';
+    var sc = l.score||5;
+    var scls = sc>=8?'sh':sc>=6?'sm2':'sl2';
+    var slbl = sc>=8?'🔥 Hot':sc>=6?'⭐ Good':'💡 Warm';
+
+    html += '<div class="lcard" id="lc'+idx+'">';
+    html += '<div class="lhead">';
+    html += '<div class="av">'+initials+'</div>';
+    html += '<div class="linfo">';
+    html += '<div class="lname">'+esc(l.name)+'<span class="spill '+scls+'">'+slbl+' '+sc+'/10</span></div>';
+    html += '<div class="lrole">'+esc(l.role)+'</div>';
+    html += '<div class="lmeta">📍 '+esc(l.country)+' · '+esc((l.project||'').slice(0,90))+'</div>';
+    html += '<div class="sbar2"><div class="sbar3"><div class="sfill" style="width:'+(sc*10)+'%"></div></div><span class="stxt">'+esc(l.score_reason||'')+'</span></div>';
+    html += '</div>';
+    html += '<div class="lbtns">';
+    html += '<button class="lb" id="sb'+idx+'" onclick="saveLead('+idx+')">+ Save</button>';
+    html += '<button class="lb p" onclick="toggleO('+idx+')">✍️ Outreach</button>';
+    html += '</div></div>';
+
+    // Contacts
+    html += '<div class="lcontacts">';
+    if(l.email){ var isReal=!l.email.includes('Search')&&!l.email.includes('Find'); html += '<span class="chip'+(isReal?' gc':'')+'" onclick="copyText(\''+esc(l.email)+'\',\'Email copied\')">✉️ '+esc(l.email)+'</span>'; }
+    if(l.instagram) html += '<span class="chip">📸 '+esc(l.instagram)+'</span>';
+    if(l.linkedin&&!l.linkedin.includes('Search')){ html += '<a class="chip" href="https://'+l.linkedin.replace('https://','').replace('http://','').split('/')[0]+'/'+l.linkedin.replace('https://','').replace('http://','').split('/').slice(1).join('/')+'" target="_blank">💼 '+esc(l.linkedin)+'</a>'; }
+    else if(l.linkedin) html += '<span class="chip">💼 '+esc(l.linkedin)+'</span>';
+    if(l.source_url) html += '<a class="chip rc" href="'+l.source_url+'" target="_blank">🔗 View Profile</a>';
+    html += '</div>';
+
+    // Outreach panel
+    html += '<div class="opanel" id="op'+idx+'">';
+    html += '<div class="otabs" id="ot'+idx+'">';
+    var allP = platforms.concat(['sequence']);
+    var firstP = null;
+    allP.forEach(function(p){
+      var hasMsg = p==='sequence' ? (l.sequence&&l.sequence.email1) : (l.outreach&&l.outreach[p]);
+      if(!hasMsg) return;
+      if(!firstP) firstP=p;
+      html += '<button class="otab'+(firstP===p?' on':'')+'" onclick="switchOT('+idx+',\''+p+'\',this)">'+(PICONS[p]||'')+ ' '+p+'</button>';
+    });
+    html += '</div>';
+
+    allP.forEach(function(p){
+      var msg = '';
+      if(p==='sequence'&&l.sequence) msg = '── DAY 1 ──\n'+(l.sequence.email1||'')+'\n\n── DAY 5 (no reply) ──\n'+(l.sequence.email2||'')+'\n\n── DAY 12 (final) ──\n'+(l.sequence.email3||'');
+      else if(l.outreach&&l.outreach[p]) msg = l.outreach[p];
+      if(!msg) return;
+      html += '<div class="omsg" id="om'+idx+'_'+p+'" style="display:'+(p===firstP?'block':'none')+';'+(p==='arabic'?'direction:rtl;text-align:right;':'')+'">'+esc(msg)+'</div>';
+    });
+
+    var hasWA = l.outreach&&l.outreach.whatsapp&&!l.outreach.whatsapp.includes('Contact');
+    var hasEm = l.email&&!l.email.includes('Search')&&!l.email.includes('Find');
+    html += '<div class="oacts">';
+    html += '<button class="oab oc" id="cb'+idx+'" onclick="copyOMsg('+idx+',\''+firstP+'\')">📋 Copy</button>';
+    if(hasWA) html += '<a class="oab ow" href="https://wa.me/?text='+encodeURIComponent(l.outreach.whatsapp)+'" target="_blank">💬 WhatsApp</a>';
+    if(hasEm) html += '<a class="oab om" href="mailto:'+l.email+'?subject=Animation Collaboration — DanAIB Studio&body='+encodeURIComponent(l.outreach&&l.outreach.email||'')+'" target="_blank">📧 Mail</a>';
+    html += '<button class="oab os" onclick="showSeq('+idx+')">📅 Sequence</button>';
+    html += '</div></div></div>';
+  });
+
+  document.getElementById('leadsOut').innerHTML = html;
+}
+
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function copyText(t,msg){ navigator.clipboard.writeText(t).then(function(){ toast(msg||'Copied!','success'); }); }
+function toggleO(i){ var p=document.getElementById('op'+i); p.classList.toggle('open'); }
+function showSeq(i){ document.getElementById('op'+i).classList.add('open'); var btn=Array.from(document.querySelectorAll('#ot'+i+' .otab')).find(function(b){ return b.textContent.includes('sequence'); }); if(btn) switchOT(i,'sequence',btn); }
+
+function switchOT(i,p,btn){
+  var allP = Object.keys(activeP).concat(['arabic','sequence']);
+  allP.forEach(function(pp){ var el=document.getElementById('om'+i+'_'+pp); if(el) el.style.display='none'; });
+  var sel=document.getElementById('om'+i+'_'+p); if(sel) sel.style.display='block';
+  document.querySelectorAll('#ot'+i+' .otab').forEach(function(b){ b.classList.remove('on'); });
+  if(btn) btn.classList.add('on');
+  var cb=document.getElementById('cb'+i); if(cb) cb.onclick=function(){ copyOMsg(i,p); };
+}
+
+function copyOMsg(i,p){
+  var el=document.getElementById('om'+i+'_'+p);
+  if(!el) return;
+  navigator.clipboard.writeText(el.textContent).then(function(){ toast('Copied!','success'); });
+}
+
+// ========== SAVE ==========
+async function saveLead(i){
+  var l=currentLeads[i]; if(!l) return;
+  if(savedLeads.find(function(s){ return s.name===l.name; })){ toast('Already saved','info'); return; }
+  savedLeads.push(Object.assign({},l,{status:'new',savedAt:Date.now()}));
+  await saveLeads();
+  var btn=document.getElementById('sb'+i); if(btn){ btn.textContent='✅ Saved'; btn.disabled=true; }
+  updateStats();
+  toast(l.name+' saved','success');
+}
+
+async function saveAllLeads(){
+  var added=0;
+  currentLeads.forEach(function(l){
+    if(!savedLeads.find(function(s){ return s.name===l.name; })){ savedLeads.push(Object.assign({},l,{status:'new',savedAt:Date.now()})); added++; }
+  });
+  await saveLeads(); updateStats();
+  toast(added+' leads saved','success');
+}
+
+// ========== TRACKER ==========
+function renderTracker(){
+  updateStats();
+  var el=document.getElementById('trackerOut');
+  if(!savedLeads.length){ el.innerHTML='<div class="empty"><div class="eico">📋</div><h3>No saved leads</h3></div>'; return; }
+  var sorted=savedLeads.slice().sort(function(a,b){ return (b.score||0)-(a.score||0); });
+  el.innerHTML=sorted.map(function(l,si){
+    var ri=savedLeads.indexOf(l);
+    var init=(l.name||'??').split(' ').map(function(w){ return w[0]||''; }).slice(0,2).join('').toUpperCase()||'??';
+    var sc=l.score||5;
+    return '<div class="tcard"><div class="tav">'+init+'</div><div class="tinfo"><div class="tname">'+esc(l.name)+' <span class="spill '+(sc>=8?'sh':sc>=6?'sm2':'sl2')+'" style="font-size:.6rem">'+sc+'/10</span></div><div class="tsub">'+esc(l.role)+' · '+esc(l.country)+(l.email&&!l.email.includes('Search')?' · <span style="color:var(--gold)">'+esc(l.email)+'</span>':'')+'</div></div><div class="tright"><select class="ssel" onchange="updateStatus('+ri+',this.value)"><option value="new"'+(l.status==='new'?' selected':'')+'>🔵 New</option><option value="contacted"'+(l.status==='contacted'?' selected':'')+'>🟡 Contacted</option><option value="replied"'+(l.status==='replied'?' selected':'')+'>🟢 Replied</option><option value="converted"'+(l.status==='converted'?' selected':'')+'>⭐ Converted</option><option value="cold"'+(l.status==='cold'?' selected':'')+'>❄️ Cold</option></select><button class="delbtn" onclick="deleteLead('+ri+')">🗑</button></div></div>';
+  }).join('');
+}
+
+async function updateStatus(i,s){ savedLeads[i].status=s; await saveLeads(); updateStats(); }
+async function deleteLead(i){ if(!confirm('Remove this lead?')) return; savedLeads.splice(i,1); await saveLeads(); renderTracker(); updateStats(); }
+async function clearAll(){ if(!confirm('Clear ALL saved leads?')) return; savedLeads=[]; await saveLeads(); renderTracker(); updateStats(); }
+
+// ========== FF ==========
+function renderFF(){
+  var el=document.getElementById('ffOut');
+  if(!countries.length){ el.innerHTML='<div class="empty"><div class="eico">🎬</div><h3>Add countries first</h3></div>'; return; }
+  var targets=Object.keys(activeT).filter(function(t){ return activeT[t]; });
+  var html='<div class="ffgrid">';
+  countries.forEach(function(c){
+    targets.forEach(function(t){
+      var q1=encodeURIComponent('"'+t+'" "'+c+'" site:filmfreeway.com');
+      var q2=encodeURIComponent('"'+t+'" "'+c+'" site:imdb.com');
+      var q3=encodeURIComponent('"'+t+'" "'+c+'" site:linkedin.com/in');
+      var q4=encodeURIComponent('"'+t+'" "'+c+'" animation contact email 2025');
+      var q5=encodeURIComponent('"'+t+'" "'+c+'" film festival 2025');
+      html+='<div class="ffcard"><div class="fft">🌍 '+esc(c)+' — '+esc(t)+'</div><div class="ffs">Real search links to find contact info</div><div class="fflinks">';
+      html+='<a class="ffl" href="https://www.google.com/search?q='+q1+'" target="_blank">🎬 FilmFreeway profiles</a>';
+      html+='<a class="ffl" href="https://www.google.com/search?q='+q2+'" target="_blank">🎥 IMDb profiles</a>';
+      html+='<a class="ffl" href="https://www.google.com/search?q='+q3+'" target="_blank">💼 LinkedIn profiles</a>';
+      html+='<a class="ffl" href="https://www.google.com/search?q='+q4+'" target="_blank">📧 Contact & email search</a>';
+      html+='<a class="ffl" href="https://www.google.com/search?q='+q5+'" target="_blank">🏆 Film festivals 2025</a>';
+      html+='</div></div>';
+    });
+  });
+  html+='</div>';
+  el.innerHTML=html;
+}
+
+// ========== BOOKING ==========
+function genBooking(){
+  var n=document.getElementById('bkN').value, t=document.getElementById('bkT').value;
+  var d=document.getElementById('bkD').value, ty=document.getElementById('bkTy').value;
+  var w=document.getElementById('bkW').value, e=document.getElementById('bkE').value;
+  var msg='📅 Book a Free '+d+' '+ty+' with '+n+'\n'+t+'\n\nI\'d love to learn about your project and show how animation can elevate it.\n\n👉 WhatsApp: '+w+'\n📧 Email: '+e+'\n🎨 Portfolio: https://officialdanaib.github.io/My-Original-Portfolio/\n🛒 Fiverr: https://www.fiverr.com/ibrahimcadmodel\n\nAvailable Mon–Sat. Message me and I\'ll confirm within 24 hours.';
+  document.getElementById('bkPrev').innerHTML='<strong>📅 Your Booking CTA</strong><div style="white-space:pre-wrap;color:var(--text);font-size:.76rem;margin-top:.4rem">'+esc(msg)+'</div>';
+  document.getElementById('bkOut').value=msg;
+  toast('Booking CTA ready — copy and use everywhere','success');
+}
+function copyBk(){ var v=document.getElementById('bkOut').value; if(!v){ toast('Generate first','error'); return; } navigator.clipboard.writeText(v).then(function(){ toast('Copied!','success'); }); }
+
+// ========== EMAIL FINDER ==========
+async function findEmail(){
+  var name=document.getElementById('fnN').value.trim();
+  var domain=document.getElementById('fnD').value.trim().replace(/^https?:\/\//,'').split('/')[0];
+  var key=document.getElementById('hKey').value.trim();
+  var out=document.getElementById('findOut');
+  if(!name||!domain){ toast('Enter name and domain','error'); return; }
+  if(!key){
+    var q1=encodeURIComponent('"'+name+'" "'+domain+'" email');
+    var q2=encodeURIComponent('"'+name+'" contact '+domain);
+    out.innerHTML='<div style="background:rgba(255,184,0,.04);border:1px solid rgba(255,184,0,.15);border-radius:9px;padding:.85rem"><div style="color:var(--gold);font-weight:600;font-size:.78rem;margin-bottom:.5rem">No Hunter key — use Google search instead:</div><div style="display:flex;flex-direction:column;gap:.3rem"><a href="https://www.google.com/search?q='+q1+'" target="_blank" class="ffl">🔍 "'+esc(name)+'" email at '+esc(domain)+'</a><a href="https://www.google.com/search?q='+q2+'" target="_blank" class="ffl">🔍 Contact page</a><a href="https://hunter.io/email-finder?first_name='+encodeURIComponent(name.split(' ')[0])+'&last_name='+encodeURIComponent(name.split(' ').slice(1).join(' '))+'&domain='+domain+'" target="_blank" class="ffl">🔗 Hunter.io web app (free)</a></div></div>';
+    return;
+  }
+  var btn=document.getElementById('findBtn'); btn.disabled=true; btn.textContent='Searching...';
+  try{
+    var parts=name.split(' ');
+    var url='https://api.hunter.io/v2/email-finder?domain='+domain+'&first_name='+encodeURIComponent(parts[0])+'&last_name='+encodeURIComponent(parts.slice(1).join(' '))+'&api_key='+key;
+    var r=await fetch(url); var d=await r.json();
+    if(d.data&&d.data.email){
+      var em=d.data.email;
+      out.innerHTML='<div style="background:rgba(0,230,118,.06);border:1px solid rgba(0,230,118,.22);border-radius:9px;padding:.85rem"><div style="color:var(--green);font-weight:700;margin-bottom:.25rem">✅ Email Found!</div><div style="font-size:.92rem;color:var(--text);font-weight:600;margin-bottom:.25rem">'+esc(em)+'</div><div style="font-size:.7rem;color:var(--muted);margin-bottom:.65rem">Confidence: '+(d.data.score||0)+'%</div><button class="runbtn" style="padding:.45rem;font-size:.78rem" onclick="copyText(\''+esc(em)+'\',\'Email copied!\')">📋 Copy Email</button></div>';
+      toast('Email found: '+em,'success');
+    } else {
+      out.innerHTML='<div style="background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:.85rem;font-size:.78rem;color:var(--muted)">No email found for '+esc(name)+' at '+esc(domain)+'. Try their website or LinkedIn directly.</div>';
+    }
+  } catch(e){ out.innerHTML='<div style="color:var(--red);font-size:.78rem">Error: '+esc(e.message)+'</div>'; }
+  btn.disabled=false; btn.textContent='🔎 Find Email';
+}
+
+// ========== EXPORT ==========
+function exportCSV(){
+  var leads=savedLeads.length?savedLeads:currentLeads;
+  if(!leads.length){ toast('No leads to export','error'); return; }
+  var rows=[['Name','Role','Country','Project','Score','Score Reason','Email','Instagram','LinkedIn','Twitter','WhatsApp','Source URL','Status','Saved At']];
+  leads.forEach(function(l){ rows.push([l.name,l.role,l.country,l.project,l.score||'',l.score_reason||'',l.email||'',l.instagram||'',l.linkedin||'',l.twitter||'',l.whatsapp||'',l.source_url||'',l.status||'new',l.savedAt?new Date(l.savedAt).toLocaleDateString():'']); });
+  var csv=rows.map(function(r){ return r.map(function(c){ return '"'+String(c||'').replace(/"/g,'""')+'"'; }).join(','); }).join('\n');
+  var a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv); a.download='danaib_leads_'+new Date().toISOString().slice(0,10)+'.csv'; a.click();
+  toast('CSV exported!','success');
+}
+
+// ========== START ==========
+document.addEventListener('DOMContentLoaded', function(){ init(); });
+</script>
+</body>
+</html>
